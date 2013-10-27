@@ -58,9 +58,6 @@ end
 
 configure :production do
   use Rack::SSL
-  use Rack::Auth::Basic, 'deployinator' do |username, password|
-     == [username, password]
-  end
 end
 
 helpers do
