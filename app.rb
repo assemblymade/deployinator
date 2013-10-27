@@ -63,6 +63,11 @@ configure :production do
   end
 end
 
+get '/ping' do
+  content_type :text
+  'ok'
+end
+
 post '/:source' do |source|
   deploy = Deploy.new(source, params)
   deploy.report!
