@@ -59,7 +59,23 @@ end
 configure :production do
   use Rack::SSL
   use Rack::Auth::Basic, 'deployinator' do |username, password|
-    ENV['AUTH_BASIC'].split(':') == [username, password]
+     == [username, password]
+  end
+end
+
+helpers do
+  def protected!
+    return if authorized?
+    headers['WWW-Authenticate'] = 'Basic realm="Restricted Area"'
+    halt(401, "Not authorized\n")
+  end
+
+  def authorized?
+    @auth ||=  Rack::Auth::Basic::Request.new(request.env)
+    @auth.provided? &&
+      @auth.basic? &&
+      @auth.credentials &&
+      @auth.credentials == ENV['AUTH_BASIC'].split(':')
   end
 end
 
@@ -69,6 +85,7 @@ get '/ping' do
 end
 
 post '/:source' do |source|
+  protected!
   deploy = Deploy.new(source, params)
   deploy.report!
   content_type :text
