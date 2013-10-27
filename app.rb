@@ -78,7 +78,7 @@ end
 
 get '/ping' do
   content_type :text
-  'ok'
+  'PONG'
 end
 
 post '/:source' do |source|
