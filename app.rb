@@ -60,29 +60,14 @@ configure :production do
   use Rack::SSL
 end
 
-helpers do
-  def protected!
-    return if authorized?
-    headers['WWW-Authenticate'] = 'Basic realm="Restricted Area"'
-    halt(401, "Not authorized\n")
-  end
-
-  def authorized?
-    @auth ||=  Rack::Auth::Basic::Request.new(request.env)
-    @auth.provided? &&
-      @auth.basic? &&
-      @auth.credentials &&
-      @auth.credentials == ENV['AUTH_BASIC'].split(':')
-  end
-end
-
 get '/ping' do
   content_type :text
-  'PONG'
+  "PONG\n"
 end
 
 post '/:source' do |source|
-  protected!
+  halt(401, "Not authorized\n") unless params[:secret] == ENV['SECRET']
+
   deploy = Deploy.new(source, params)
   deploy.report!
   content_type :text
