@@ -54,6 +54,7 @@ end
 
 configure do
   STDOUT.sync = true
+  Librato::Metrics.authenticate ENV['LIBRATO_USER'], ENV['LIBRATO_TOKEN']
 end
 
 configure :production do
